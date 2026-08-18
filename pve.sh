@@ -1127,11 +1127,13 @@ cat >> $tmpf << 'EOF'
 		                    var capMatch = line.match(/\[([^\]]+)\]/);
 		                    capacity = capMatch ? capMatch[1] : line.split(':')[1].trim();
 		                } else if (/Power_On_Hours/i.test(line)) {
-		                    var hoursMatch = line.trim().match(/(\d+)\s*$/);
+		                    var hoursMatch = line.match(/\s-\s+(\d+)/);
 		                    if (hoursMatch) hours = hoursMatch[1];
 		                } else if (/Temperature/i.test(line)) {
-		                    var tempMatch = line.trim().match(/(\d+)\s*$/);
-		                    if (tempMatch) temp = tempMatch[1];
+		                    var tempMatch = line.match(/^\s*(194|190)\s+.*?\s-\s+(\d+)/);
+		                    if (tempMatch && (tempMatch[1] === '194' || !temp)) {
+		                        temp = tempMatch[2];
+		                    }
 		                }
 		            }
 
@@ -1164,19 +1166,10 @@ sed -i "${ln}r $tmpf" $pvemanagerlib
 rm $tmpf
 
 
-echo 修改页面高度
-disk_count=$(lsblk -d -o NAME | grep -cE 'sd[a-z]|nvme[0-9]')
-# 高度变量，某些CPU核心过多，或者想显示那个PVE存储库那一行，导致高度不够，修改69为合适的数字，如80、100等。
-height_increase=$((disk_count * 69))
-
-node_status_new_height=$((400 + height_increase))
-sed -i -r '/widget\.pveNodeStatus/,+5{/height/{s#[0-9]+#'$node_status_new_height'#}}' $pvemanagerlib
-cpu_status_new_height=$((300 + height_increase))
-sed -i -r '/widget\.pveCpuStatus/,+5{/height/{s#[0-9]+#'$cpu_status_new_height'#}}' $pvemanagerlib
-
-echo "修改后的高度值："
-sed -n -e '/widget\.pveNodeStatus/,+5{/height/{p}}' \
-       -e '/widget\.pveCpuStatus/,+5{/height/{p}}' $pvemanagerlib
+echo 设置节点状态面板自适应高度
+# 固定 height 会在多磁盘、文字换行或浏览器缩放时裁切内容。
+# 改为 minHeight 保留 PVE 默认最小高度，同时允许面板由内容自然撑开。
+sed -i -r '/widget\.pveNodeStatus/,+5{s/^([[:space:]]*)height:[[:space:]]*[0-9]+,/\1minHeight: 350,/}' $pvemanagerlib
 
 # 调整显示布局
 ln=$(expr $(sed -n -e '/widget.pveDcGuests/=' $pvemanagerlib) + 10)
