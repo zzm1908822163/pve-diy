@@ -90,8 +90,8 @@ aptsources() {
 	[[ -e /etc/apt/sources.list.d/debian.sources ]] && mv /etc/apt/sources.list.d/debian.sources /etc/apt/backup/debian.sources.bak
 
 	echo " 请选择您需要的apt国内源"
-	echo " 1. 清华大学镜像站"
-	echo " 2. 中科大镜像站"
+	echo " 1. 中科大镜像站"
+	## echo " 2. 清华大学镜像站"
 	input="请输入选择[默认1]"
 	while :; do
 	read -t 30 -p " ${input}： " aptsource || echo
@@ -99,19 +99,19 @@ aptsources() {
 	case $aptsource in
 	1)
 	cat > /etc/apt/sources.list <<-EOF
-		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver} main contrib non-free non-free-firmware
-		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver}-updates main contrib non-free non-free-firmware
-		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver}-backports main contrib non-free non-free-firmware
-		deb https://mirrors.tuna.tsinghua.edu.cn/debian-security ${sver}-security main contrib non-free non-free-firmware
+		deb https://mirrors.ustc.edu.cn/debian/ ${sver} main contrib non-free non-free-firmware
+		deb https://mirrors.ustc.edu.cn/debian/ ${sver}-updates main contrib non-free non-free-firmware
+		deb https://mirrors.ustc.edu.cn/debian/ ${sver}-backports main contrib non-free non-free-firmware
+		deb https://mirrors.ustc.edu.cn/debian-security/ ${sver}-security main contrib non-free non-free-firmware
 	EOF
 	break
 	;;
 	2)
 	cat > /etc/apt/sources.list <<-EOF
-		deb https://mirrors.ustc.edu.cn/debian/ ${sver} main contrib non-free non-free-firmware
-		deb https://mirrors.ustc.edu.cn/debian/ ${sver}-updates main contrib non-free non-free-firmware
-		deb https://mirrors.ustc.edu.cn/debian/ ${sver}-backports main contrib non-free non-free-firmware
-		deb https://mirrors.ustc.edu.cn/debian-security/ ${sver}-security main contrib non-free non-free-firmware
+		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver} main contrib non-free non-free-firmware
+		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver}-updates main contrib non-free non-free-firmware
+		deb https://mirrors.tuna.tsinghua.edu.cn/debian/ ${sver}-backports main contrib non-free non-free-firmware
+		deb https://mirrors.tuna.tsinghua.edu.cn/debian-security ${sver}-security main contrib non-free non-free-firmware
 	EOF
 	break
 	;;
@@ -127,22 +127,22 @@ ctsources() {
     [[ -e /usr/share/perl5/PVE/APLInfo.pm ]] && cp -rf /usr/share/perl5/PVE/APLInfo.pm /etc/apt/backup/APLInfo.pm.bak
     [[ -e /var/lib/pve-manager/apl-info/download.proxmox.com ]] && cp -rf /var/lib/pve-manager/apl-info/download.proxmox.com /etc/apt/backup/download.proxmox.com.bak
 	echo " 请选择您需要的CT模板国内源"
-	echo " 1. 清华大学镜像站"
-	echo " 2. 中科大镜像站"
+	echo " 1. 中科大镜像站"
+	## echo " 2. 清华大学镜像站"
 	input="请输入选择[默认1]"
 	while :; do
 	read -t 30 -p " ${input}： " ctsource || echo
 	ctsource=${ctsource:-1}
 	case $ctsource in
 	1)
-	sed -i 's|http://download.proxmox.com|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
-	sed -i 's|http://mirrors.ustc.edu.cn/proxmox|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
+	sed -i 's|http://download.proxmox.com|https://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
+	sed -i 's|https://mirrors.tuna.tsinghua.edu.cn/proxmox|https://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
     pveam update
 	break
 	;;
 	2)
-	sed -i 's|http://download.proxmox.com|http://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
-	sed -i 's|https://mirrors.tuna.tsinghua.edu.cn/proxmox|http://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
+	sed -i 's|http://download.proxmox.com|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
+	sed -i 's|https://mirrors.ustc.edu.cn/proxmox|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/APLInfo.pm
     pveam update
 	break
 	;;
@@ -162,7 +162,7 @@ pvehelp(){
     [[ -e /etc/apt/sources.list.d/pve-no-subscription.list ]] && cp -rf /etc/apt/sources.list.d/pve-no-subscription.list /etc/apt/backup/pve-no-subscription.list.bak
 
 	cat > /etc/apt/sources.list.d/pve-no-subscription.list <<-EOF
-deb https://mirrors.tuna.tsinghua.edu.cn/proxmox/debian ${sver} pve-no-subscription
+deb https://mirrors.ustc.edu.cn/proxmox/debian ${sver} pve-no-subscription
 EOF
 	TIME g "使用帮助源，更换完成!"
 }
@@ -193,7 +193,7 @@ novalidsub(){
 }
 pvegpg(){
 	[[ -e /etc/apt/trusted.gpg.d/proxmox-release-${sver}.gpg ]] && mv /etc/apt/trusted.gpg.d/proxmox-release-${sver}.gpg /etc/apt/backup/proxmox-release-${sver}.gpg.bak
-	wget -q --timeout=5 --tries=1 --show-progres http://mirrors.tuna.tsinghua.edu.cn/proxmox/debian/proxmox-release-${sver}.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-${sver}.gpg
+	wget -q --timeout=5 --tries=1 --show-progres https://mirrors.ustc.edu.cn/proxmox/debian/proxmox-release-${sver}.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-${sver}.gpg
 	if [[ $? -ne 0 ]];then
 		TIME r "尝试重新下载..."
 		wget -q --timeout=5 --tries=1 --show-progres https://raw.githubusercontent.com/xiangfeidexiaohuo/pve-diy/master/gpg/proxmox-release-${sver}.gpg -O /etc/apt/trusted.gpg.d/proxmox-release-${sver}.gpg
@@ -276,10 +276,10 @@ pve9_ceph(){
     [[ -e /etc/apt/sources.list.d/ceph.list ]] && mv /etc/apt/sources.list.d/ceph.list /etc/apt/backup/ceph.list.bak
 
     [[ -e /usr/share/perl5/PVE/CLI/pveceph.pm ]] && cp -rf /usr/share/perl5/PVE/CLI/pveceph.pm /etc/apt/backup/pveceph.pm.bak
-	sed -i 's|http://download.proxmox.com|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/CLI/pveceph.pm
+	sed -i 's|http://download.proxmox.com|https://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/CLI/pveceph.pm
 
 	cat > /etc/apt/sources.list.d/ceph.list <<-EOF
-deb https://mirrors.tuna.tsinghua.edu.cn/proxmox/debian/ceph-squid ${sver} no-subscription
+deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-squid ${sver} no-subscription
 EOF
 	TIME g "添加ceph-squid源完成!"
 }
@@ -313,10 +313,10 @@ pve8_ceph(){
     [[ -e /etc/apt/sources.list.d/ceph.list ]] && mv /etc/apt/sources.list.d/ceph.list /etc/apt/backup/ceph.list.bak
 
     [[ -e /usr/share/perl5/PVE/CLI/pveceph.pm ]] && cp -rf /usr/share/perl5/PVE/CLI/pveceph.pm /etc/apt/backup/pveceph.pm.bak
-	sed -i 's|http://download.proxmox.com|https://mirrors.tuna.tsinghua.edu.cn/proxmox|g' /usr/share/perl5/PVE/CLI/pveceph.pm
+	sed -i 's|http://download.proxmox.com|https://mirrors.ustc.edu.cn/proxmox|g' /usr/share/perl5/PVE/CLI/pveceph.pm
 
 	cat > /etc/apt/sources.list.d/ceph.list <<-EOF
-deb https://mirrors.tuna.tsinghua.edu.cn/proxmox/debian/ceph-quincy ${sver} main
+deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-quincy ${sver} main
 EOF
 	TIME g "添加ceph-quincy源完成!"
 }
@@ -1236,6 +1236,7 @@ CL="\033[m"
 
 echo -e "${RD}此操作非常危险，风险自行承担！！！${CL}"
 echo -e "${RD}操作不当会引起系统崩溃，请知悉！${CL}"
+echo -e "${RD}底层内核是无法卸载的！！！${CL}"
 
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
@@ -1301,7 +1302,7 @@ echo -e "${GN}清理和 GRUB 更新完成。${CL}"
 menu(){
 	cat <<-EOF
 
-`TIME y "    PVE9优化脚本 - 2026 刀刀优化版    "`
+`TIME y "    PVE优化脚本 - 2026 刀刀优化版    "`
 ┌──────────────────────────────────────────┐
     1. 一键优化PVE(换源、去订阅等)
     2. 配置PCI硬件直通
@@ -1309,9 +1310,8 @@ menu(){
     4. 添加CPU、主板、硬盘温度显示
     5. 删除CPU、主板、硬盘温度显示
     6. PVE8/9添加ceph-squid源
-    7. PVE7/8添加ceph-quincy源
-    8. 一键卸载ceph
-    9. 一键卸载旧内核(危险，谨慎操作！)
+    7. 一键卸载ceph
+    8. 一键卸载旧内核(危险，谨慎操作！)
 ├──────────────────────────────────────────┤
     0. 退出
 └──────────────────────────────────────────┘
@@ -1358,18 +1358,12 @@ EOF
 		menu
 	;;
 	7)
-		pve8_ceph
-		echo
-		pause
-		menu
-	;;
-	8)
 		remove_ceph
 		echo
 		pause
 		menu
 	;;
-	9)
+	8)
 		remove_kernel
 		echo
 		pause
